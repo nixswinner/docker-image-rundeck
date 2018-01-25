@@ -20,10 +20,10 @@ function shutdown()
 
 echo -n "`date +"%d.%m.%Y %T.%3N"` - Starting ${prog}"
 cd /var/log/rundeck
-nohup su -s /bin/bash rundeck -c "$rundeckd &>>/var/log/rundeck/service.log" &
+nohup su -s /bin/bash rundeck -c "$rundeckd" 2>&1 /dev/stdout &
 PID=$!
 echo $PID > $PIDFILE
 
 trap shutdown HUP INT QUIT ABRT KILL ALRM TERM TSTP
 
-while pgrep -F /var/run/rundeckd.pid > /dev/null; do sleep 5; done
+wait `cat ${PIDFILE}`

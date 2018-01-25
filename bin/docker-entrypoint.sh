@@ -13,7 +13,6 @@ if [[ -n "${RUNDECK_GID}" && -n "${RUNDECK_UID}" ]]; then
 fi
 
 # chown directories and files that might be coming from volumes
-chown -R mysql:mysql /var/lib/mysql
 chown -R rundeck:rundeck /etc/rundeck
 chown -R rundeck:rundeck /var/rundeck
 chown -R rundeck:adm /var/log/rundeck
@@ -47,9 +46,7 @@ if [ ! -f "${initfile}" ]; then
   if [ -f /run/secrets/RUNDECK_PASSWORD ]; then
     RUNDECK_PASSWORD=$(< /run/secrets/RUNDECK_PASSWORD)
   fi
-  if [ -f /run/secrets/DATABASE_ADMIN_PASSWORD ]; then
-    DATABASE_ADMIN_PASSWORD=$(< /run/secrets/DATABASE_ADMIN_PASSWORD)
-  fi
+
   if [ -f /run/secrets/KEYSTORE_PASS ]; then
     KEYSTORE_PASS=$(< /run/secrets/KEYSTORE_PASS)
   fi
@@ -57,27 +54,15 @@ if [ ! -f "${initfile}" ]; then
     TRUSTSTORE_PASS=$(< /run/secrets/TRUSTSTORE_PASS)
   fi
 
-   DATABASE_URL=${DATABASE_URL:-"jdbc:mysql://localhost/rundeckdb?autoReconnect=true"}
-   RUNDECK_PASSWORD=${RUNDECK_PASSWORD:-$(pwgen -s 15 1)}
-   DATABASE_ADMIN_PASSWORD=${DATABASE_ADMIN_PASSWORD:-${RUNDECK_PASSWORD}}
-   DATABASE_ADMIN_USER=${DATABASE_ADMIN_USER:-rundeck}
+   DATABASE_URL="jdbc:${DB_TYPE}://${DB_HOST}/${DB_NAME}?autoReconnect=true"
+   DB_PASSWORD=${DB_PASSWORD:-$(pwgen -s 15 1)}
+   DB_USER=${DB_USER:-rundeck}
    RUNDECK_STORAGE_PROVIDER=${RUNDECK_STORAGE_PROVIDER:-"file"}
    RUNDECK_PROJECT_STORAGE_TYPE=${RUNDECK_PROJECT_STORAGE_TYPE:-"file"}
-   NO_LOCAL_MYSQL=${NO_LOCAL_MYSQL:-"false"}
-   SKIP_DATABASE_SETUP=${SKIP_DATABASE_SETUP:-"false"}
    LOGIN_MODULE=${LOGIN_MODULE:-"RDpropertyfilelogin"}
    JAAS_CONF_FILE=${JAAS_CONF_FILE:-"jaas-loginmodule.conf"}
    KEYSTORE_PASS=${KEYSTORE_PASS:-"adminadmin"}
    TRUSTSTORE_PASS=${TRUSTSTORE_PASS:-${KEYSTORE_PASS}}
-
-   update_user_password () {
-      (
-      echo "UPDATE mysql.user SET password=PASSWORD('${2}') WHERE user='${1}';"
-      echo "FLUSH PRIVILEGES;"
-      echo "quit"
-      ) |
-      mysql
-   }
 
    echo "=>Initializing rundeck - This may take a few minutes"
    if [ ! -f /var/lib/rundeck/.ssh/id_rsa ]; then
@@ -102,41 +87,6 @@ if [ ! -f "${initfile}" ]; then
        cp /etc/rundeck/ssl/keystore /etc/rundeck/ssl/truststore
    fi
 
-   if [ "${NO_LOCAL_MYSQL}" == "false" ]; then
-      echo "=>Initializing local MySQL..."
-      if [ "$(ls -A /var/lib/mysql)" ]; then
-         /etc/init.d/mysql start
-      else
-         echo "=>MySQL datadir is empty...initializing"
-         /usr/bin/mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
-         /etc/init.d/mysql start
-     fi
-
-     (
-     echo "CREATE DATABASE IF NOT EXISTS rundeckdb;"
-     echo "GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE, CREATE VIEW, ALTER, INDEX, EXECUTE ON rundeckdb.* TO 'rundeck'@'localhost' IDENTIFIED BY '${RUNDECK_PASSWORD}';"
-     echo "quit"
-     ) |
-     mysql
-     sleep 5
-     /etc/init.d/mysql stop
-     # Add MySQL to supervisord conf
-     cat /opt/mysql.conf >> /etc/supervisor/conf.d/rundeck.conf
-   else
-      echo "=>NO_LOCAL_MYSQL set to true.  Skipping local MySQL setup"
-      if [[ "${DATABASE_URL}" == *"mysql"* && "${SKIP_DATABASE_SETUP}" != "true" ]]; then
-        echo "=>Initializing remote MySQL setup"
-        (
-         echo "CREATE DATABASE IF NOT EXISTS rundeckdb;"
-         echo "GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE, CREATE VIEW, ALTER, INDEX, EXECUTE ON rundeckdb.* TO 'rundeck'@'%' IDENTIFIED BY '${RUNDECK_PASSWORD}';"
-         echo "quit"
-         ) |
-         mysql --host=$(echo ${DATABASE_URL} | grep -oP "(?<=jdbc:mysql:\/\/)(.*)(?=\/)") --user=${DATABASE_ADMIN_USER} --password=${DATABASE_ADMIN_PASSWORD}
-      else
-        echo "=>Skipping remote database setup"
-      fi
-   fi
-
   if ! [ -z "${EXTERNAL_SERVER_URL}" ]; then
     # if external_server_url is specified, write it in
     sed -i 's,#\?grails.serverURL\=.*,grails.serverURL\='${EXTERNAL_SERVER_URL}',g' /etc/rundeck/rundeck-config.properties
@@ -147,12 +97,12 @@ if [ ! -f "${initfile}" ]; then
    if grep -q dataSource.username /etc/rundeck/rundeck-config.properties ; then
       :
    else
-      echo "dataSource.username = rundeck" >> /etc/rundeck/rundeck-config.properties
+      echo "dataSource.username = ${DB_USER}" >> /etc/rundeck/rundeck-config.properties
    fi
    if grep -q dataSource.password /etc/rundeck/rundeck-config.properties ; then
-      sed -i 's,dataSource.password = .*,dataSource.password = '${RUNDECK_PASSWORD}',g' /etc/rundeck/rundeck-config.properties
+      sed -i 's,dataSource.password = .*,dataSource.password = '${DB_PASSWORD}',g' /etc/rundeck/rundeck-config.properties
    else
-      echo "dataSource.password = ${RUNDECK_PASSWORD}" >> /etc/rundeck/rundeck-config.properties
+      echo "dataSource.password = ${DB_PASSWORD}" >> /etc/rundeck/rundeck-config.properties
    fi
 
    # Check if we need to set the rundeck.gui.brand.html property
@@ -251,14 +201,6 @@ if [ ! -f "${initfile}" ]; then
 
    echo -e "\n\n\n"
    echo "==================================================================="
-   if [ "${NO_LOCAL_MYSQL}" == "true" ]; then
-      echo "NO_LOCAL_MYSQL set to true so local MySQL has not been configured or started"
-   else
-      echo "MySQL user 'root' has no password but only allows local connections"
-   fi
-   echo "MySQL user 'rundeck' password set to ${RUNDECK_PASSWORD}"
-   echo "Rundeck project storage type set to ${RUNDECK_PROJECT_STORAGE_TYPE}"
-   echo "Rundeck Storage provider set to ${RUNDECK_STORAGE_PROVIDER}"
    echo "Rundeck public key:"
    cat /var/lib/rundeck/.ssh/id_rsa.pub
    if ! [ -z "${EXTERNAL_SERVER_URL}" ]; then
@@ -266,11 +208,16 @@ if [ ! -f "${initfile}" ]; then
    else
       echo "Server URL set to ${SERVER_URL}"
    fi
-   
+   echo "Your rundesk user is '' and password is '${RUNDECK_ADMIN_PASSWORD}'"
    echo "==================================================================="
 
    touch ${initfile}
 fi
 
-echo "Starting Supervisor.  You can safely CTRL-C and the container will continue to run with or without the -d (daemon) option"
-/usr/bin/supervisord -c /etc/supervisor/conf.d/rundeck.conf >> /dev/null
+/custom-scripts.sh
+
+
+echo "waiting for the database to come up"
+wait-for-it -h ${DB_HOST} -p ${DB_PORT} -t 60 -- echo "db up"
+echo "Starting rundesk"
+/usr/bin/supervisord -c /etc/supervisor/conf.d/rundeck.conf

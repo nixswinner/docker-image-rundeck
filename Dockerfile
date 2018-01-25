@@ -1,9 +1,11 @@
 # Dockerfile for rundeck
-# https://github.com/jjethwa/rundeck
+# initially copied fromhttps://github.com/jjethwa/rundeck
+# now on https://github.com/eugenmayer/rundeck
 
 FROM debian:stretch
 
-MAINTAINER Jordan Jethwa
+ARG RUNDECK_VERSION=2.10.4
+ARG RUNDECK_CLI_VERSION=1.0.22
 
 ENV SERVER_URL=https://localhost:4443 \
     RUNDECK_STORAGE_PROVIDER=file \
@@ -17,12 +19,12 @@ ENV SERVER_URL=https://localhost:4443 \
 RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list && \
     apt-get -qq update && \
-    apt-get -qqy install -t stretch-backports --no-install-recommends bash openjdk-8-jre-headless ca-certificates-java supervisor procps sudo ca-certificates openssh-client mysql-server mysql-client pwgen curl git uuid-runtime parallel && \
+    apt-get -qqy install -t stretch-backports --no-install-recommends bash openjdk-8-jre-headless ca-certificates-java supervisor procps sudo ca-certificates openssh-client pwgen curl uuid-runtime parallel && \
     cd /tmp/ && \
-    curl -Lo /tmp/rundeck.deb http://dl.bintray.com/rundeck/rundeck-deb/rundeck_2.10.4-1-GA_all.deb && \
+    curl -Lo /tmp/rundeck.deb http://dl.bintray.com/rundeck/rundeck-deb/rundeck_${RUNDECK_VERSION}-1-GA_all.deb && \
     echo '38937c90592ee9ca085bdec65dbbbb0693db2b85772ef5860ac856e044002aa0  rundeck.deb' > /tmp/rundeck.sig && \
     shasum -a256 -c /tmp/rundeck.sig && \
-    curl -Lo /tmp/rundeck-cli.deb https://github.com/rundeck/rundeck-cli/releases/download/v1.0.22/rundeck-cli_1.0.22-1_all.deb && \
+    curl -Lo /tmp/rundeck-cli.deb https://github.com/rundeck/rundeck-cli/releases/download/v${RUNDECK_CLI_VERSION}/rundeck-cli_${RUNDECK_CLI_VERSION}-1_all.deb && \
     echo '2dd77e3ebda708fd80ce4630cc6d5a0a56b51399d35ef2bdf72ece8a2e401ecf  rundeck-cli.deb' > /tmp/rundeck-cli.sig && \
     shasum -a256 -c /tmp/rundeck-cli.sig && \
     cd - && \
@@ -39,13 +41,19 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ADD content/ /
-RUN chmod u+x /opt/run && \
-    mkdir -p /var/log/supervisor && mkdir -p /opt/supervisor && \
-    chmod u+x /opt/supervisor/rundeck && chmod u+x /opt/supervisor/mysql_supervisor
+COPY rundeck-defaults /opt/rundeck-defaults
+COPY supervisor /etc/supervisor
+COPY bin/docker-entrypoint.sh /
+COPY bin/custom-scripts.sh /
+COPY bin/rundeck-wrapper.sh /usr/local/bin/rundeck-wrapper
+COPY bin/wait-for-it.sh /usr/local/bin/wait-for-it
+
+RUN mkdir -p /var/log/supervisor /opt/supervisor /docker-entrypoint.d/ && \
+    chmod u+x /usr/local/bin/rundeck-wrapper /docker-entrypoint.sh /custom-scripts.sh
 
 EXPOSE 4440 4443
 
-VOLUME  ["/etc/rundeck", "/var/rundeck", "/var/lib/rundeck", "/var/lib/mysql", "/var/log/rundeck", "/opt/rundeck-plugins", "/var/lib/rundeck/logs", "/var/lib/rundeck/var/storage"]
+## TODOL should we remove /var/lib/rundeck ?
+VOLUME  ["/etc/rundeck", "/var/rundeck", "/var/lib/rundeck", "/var/log/rundeck", "/opt/rundeck-plugins", "/var/lib/rundeck/logs", "/var/lib/rundeck/var/storage"]
 
-ENTRYPOINT ["/opt/run"]
+ENTRYPOINT ["/docker-entrypoint.sh"]

@@ -1,0 +1,70 @@
+version: "2"
+
+services:
+  app:
+    image: eugenmayer/rundeck:2.10.4
+    depends_on:
+      - db
+    environment:
+      # see .env for explainations and docs
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DATABASE_ADMIN_USER: ${DB_USER}
+      EXTERNAL_SERVER_URL: ${EXTERNAL_SERVER_URL}
+      RUNDECK_ADMIN_PASSWORD: ${RUNDECK_ADMIN_PASSWORD}
+      GUI_BRAND_HTML: ${GUI_BRAND_HTML}
+      RDECK_JVM_SETTINGS: ${RDECK_JVM_SETTINGS}
+      RUNDECK_WITH_SSL: ${RUNDECK_WITH_SSL}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_DEFAULT_FROM: ${SMTP_DEFAULT_FROM}
+      RUNDECK_UID: ${RUNDECK_UID}
+      RUNDECK_GID: ${RUNDECK_GID}
+      RUNDECK_STORAGE_PROVIDER: ${RUNDECK_STORAGE_PROVIDER}
+      RUNDECK_PROJECT_STORAGE_TYPE: ${RUNDECK_PROJECT_STORAGE_TYPE}
+      LOGIN_MODULE: ${LOGIN_MODULE}
+      JAAS_CONF_FILE: ${JAAS_CONF_FILE}
+    volumes:
+      - rundeck_plugins:/opt/rundeck-plugins
+      - rundeck_config:/etc/rundeck
+      - rundeck_logs:/var/log/rundeck
+      - rundeck_storage:/var/lib/rundeck/var/storage
+      - rundeck_tmp:/var/rundeck
+      # mount those for your own ssh keys
+      # - .keys/id_rsa:/var/lib/rundeck/.ssh/id_rsa
+      # - .keys/id_rsa.pub:/var/lib/rundeck/.ssh/id_rsa.pub
+    labels:
+      io.rancher.container.create_agent: 'true'
+      io.rancher.container.agent.role: 'environment'
+    ports:
+      - 80:4440
+      - 443:4443
+  db:
+    image: postgres:9.6
+    volumes:
+      - rundeck_db:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+volumes:
+  rundeck_config:
+    driver: local
+  rundeck_tmp:
+    driver: local
+  rundeck_storage:
+    driver: local
+  rundeck_logs:
+    driver: local
+  rundeck_plugins:
+    driver: local
+  rundeck_plugins:
+    driver: local
+  rundeck_db:
+    driver: local
