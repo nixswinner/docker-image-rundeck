@@ -12,11 +12,11 @@ docker-compose up
 
 (replace localhost with your `docker-machine ip` if you use `dockertoolbox` or similar)
 You can now access the instance by going on `https://localhost`
-If you set `RUNDECK_WITH_SSL=false` in the `.env` file, you need to use `http://localhost`
+If you set `RUNDECK_WITH_SSL=false` in the [.env](https://github.com/EugenMayer/rundeck/blob/master/.env) file, you need to use `http://localhost`
 
 ## Configuration / Adjustments 
 
-Just edit `.env` and adjust it to what you need
+Just edit [.env](https://github.com/EugenMayer/rundeck/blob/master/.env) and adjust it to what you need
 
 Advanced: You can mount custom scripts into the container at `/docker-entrypoint.d/` to let them 
 run every single container start. So `-v mysqcript.sh:/docker-entrypoint.d/myscript.sh`
