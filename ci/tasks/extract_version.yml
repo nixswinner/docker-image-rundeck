@@ -1,0 +1,23 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: eugenmayer/make
+    tag: latest
+
+inputs:
+  - name: rundeck-version
+
+outputs:
+  - name: build_args
+
+run:
+  path: /bin/bash
+  user: root
+  args:
+  - '-elc'
+  - |
+    export CI_BASE=`pwd`
+    export RUNDECK_VERSION=`cat ${CI_BASE}/rundeck-version/version`
+    echo "{\"RUNDECK_VERSION\":\"${RUNDECK_VERSION}\"} > ${CI_BASE}/build_args/build_args.json
