@@ -19,5 +19,5 @@ run:
   - '-elc'
   - |
     export CI_BASE=`pwd`
-    export RUNDECK_VERSION=`cat ${CI_BASE}/rundeck-version/version`
-    echo "{\"RUNDECK_VERSION\":\"${RUNDECK_VERSION}\"} > ${CI_BASE}/build_args/build_args.json
+    export RUNDECK_VERSION=`cat ${CI_BASE}/rundeck-version/number`
+    echo "{\"RUNDECK_VERSION\":\"${RUNDECK_VERSION}\"}" > ${CI_BASE}/build_args/build_args.json
