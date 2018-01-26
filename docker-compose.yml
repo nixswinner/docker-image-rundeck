@@ -22,6 +22,7 @@ services:
       RUNDECK_PROJECT_STORAGE_TYPE: ${RUNDECK_PROJECT_STORAGE_TYPE}
       LOGIN_MODULE: ${LOGIN_MODULE}
       JAAS_CONF_FILE: ${JAAS_CONF_FILE}
+      RUNDECK_WITH_SSL: "${RUNDECK_WITH_SSL}"
     volumes:
       - rundeck_plugins:/opt/rundeck-plugins
       - rundeck_config:/etc/rundeck

@@ -22,13 +22,12 @@ chmod -R 750 /tmp/rundeck
 
 initfile=/etc/rundeck.init
 if [ ! -f "${initfile}" ]; then
+  echo "Initializing with defaults"
   ############  initial configuration copy, once only
 
   # copy rundeck defaults
-  if [ ! "$(ls -A /etc/rundeck)" ]; then
-    cp -R /opt/rundeck-defaults/* /etc/rundeck
-    chown -R rundeck:rundeck /etc/rundeck
-  fi
+  cp -R /opt/rundeck-defaults/* /etc/rundeck
+  chown -R rundeck:rundeck /etc/rundeck
 
   touch ${initfile}
 fi
@@ -55,10 +54,10 @@ if [ "${SERVER_PROTO}" == "http" ]; then
 else
   # used in profile of debians startup script to populate RDECK_JVM
   # if not explicitly set ( e.g. disabled ).. enable it
-  if [ -z "${RUNDECK_WITH_SSL}" ]; then
+  if [ -z "${RUNDECK_WITH_SSL}" ] || [ "${RUNDECK_WITH_SSL}" == "" ]; then
     export RUNDECK_WITH_SSL=true
   else
-    echo "skipping force-enabling-SSL by scheme, since  RUNDECK_WITH_SSL enforced a custom value"
+    echo "skipping force-enabling-SSL by scheme, since RUNDECK_WITH_SSL enforced a custom value"
   fi
   SERVER_PORT=4443
 fi
