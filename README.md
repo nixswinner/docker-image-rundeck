@@ -12,11 +12,11 @@ docker-compose up
 
 (replace localhost with your `docker-machine ip` if you use `dockertoolbox` or similar)
 You can now access the instance by going on `https://localhost`
-If you set `RUNDECK_WITH_SSL=false` in the [.env](https://github.com/EugenMayer/rundeck/blob/master/.env) file, you need to use `http://localhost`
+If you set an `EXTERNAL_SERVER_URL` with an `http` scheme in the [.env_rundeck](https://github.com/EugenMayer/rundeck/blob/master/.env_rundeck) file, you need to use `http://localhost`
 
 ## Configuration / Adjustments 
 
-Just edit [.env](https://github.com/EugenMayer/rundeck/blob/master/.env) and adjust it to what you need
+Just edit [.env_rundeck](https://github.com/EugenMayer/rundeck/blob/master/.env_rundeck) and adjust it to what you need
 
 Advanced: You can mount custom scripts into the container at `/docker-entrypoint.d/` to let them 
 run every single container start. So `-v mysqcript.sh:/docker-entrypoint.d/myscript.sh`
@@ -45,7 +45,7 @@ The entrypoint run script will check for docker secrets set for RUNDECK_PASSWORD
 
 # Environment variables
 
-Please see the [.env]() file
+Please see the [.env_rundeck](https://github.com/EugenMayer/rundeck/blob/master/.env_rundeck) file
 
 # Volumes
 
@@ -58,18 +58,6 @@ Please see the [.env]() file
 /var/lib/rundeck/logs
 /var/lib/rundeck/var/storage - file based storage folder
 ```
-
-# Working behind a web proxy
-If you are running Rundeck behind a web proxy, use the following:
-```
-sudo docker run -p 4440:4440 \
-  -e EXTERNAL_SERVER_URL=http://MY.HOSTNAME.COM:4440 \
-  -e HTTP_PROXY="http://WEBPROXY:PORT" \
-  -e HTTPS_PROXY="http://WEBPROXY:PORT" \
-  -e RDECK_JVM="-Djava.net.useSystemProxies=true" \
-  --name rundeck -t eugenmayer/rundeck:latest
-```
-
 
 # Using an SSL Terminated Proxy
 See: http://rundeck.org/docs/administration/configuring-ssl.html#using-an-ssl-terminated-proxy
