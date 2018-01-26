@@ -58,8 +58,12 @@ else
     export RUNDECK_WITH_SSL=true
   else
     echo "skipping force-enabling-SSL by scheme, since RUNDECK_WITH_SSL enforced a custom value"
+    if [ "$RUNDECK_WITH_SSL" == "true" ] || [ "$RUNDECK_WITH_SSL" == "1" ]; then
+      SERVER_PORT=4443
+    else
+      SERVER_PORT=4440
+    fi
   fi
-  SERVER_PORT=4443
 fi
 
 SERVER_URL="${SERVER_PROTO}://${SERVER_HOSTNAME}:${SERVER_PORT}"
