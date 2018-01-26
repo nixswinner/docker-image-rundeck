@@ -25,7 +25,7 @@ run every single container start. So `-v mysqcript.sh:/docker-entrypoint.d/myscr
 
 1. Rundeck with a (replaceable) postgresql database as sideload
 1. No SSH.  Use docker exec
-1. Supply the EXTERNAL_SERVER_URL or it will default to https://0.0.0.0:4443
+1. You must supply the EXTERNAL_SERVER_URL parameter
 1. As always, update passwords for pre-installed accounts
 1. I sometimes get connection reset by peer errors when building the Docker image from the Rundeck download URL.  Trying again usually works.
 
