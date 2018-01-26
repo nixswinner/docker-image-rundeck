@@ -10,7 +10,6 @@ ARG RUNDECK_CLI_VERSION=1.0.22
 ENV SERVER_URL=https://localhost:4443 \
     RUNDECK_STORAGE_PROVIDER=file \
     RUNDECK_PROJECT_STORAGE_TYPE=file \
-    NO_LOCAL_MYSQL=false \
     LOGIN_MODULE=RDpropertyfilelogin \
     JAAS_CONF_FILE=jaas-loginmodule.conf \
     KEYSTORE_PASS=adminadmin \

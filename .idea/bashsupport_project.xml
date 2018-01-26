@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BashSupportProjectSettings">
+    <option name="globalVariables">
+      <set>
+        <option value="DB_TYPE" />
+        <option value="EXTERNAL_SERVER_URL" />
+        <option value="GUI_BRAND_HTML" />
+        <option value="RUNDECK_ADMIN_PASSWORD" />
+        <option value="RUNDECK_GID" />
+        <option value="RUNDECK_UID" />
+        <option value="SMTP_DEFAULT_FROM" />
+        <option value="SMTP_HOST" />
+        <option value="SMTP_PASSWORD" />
+        <option value="SMTP_PORT" />
+        <option value="SMTP_USERNAME" />
+      </set>
+    </option>
+  </component>
+</project>
