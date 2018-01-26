@@ -54,7 +54,10 @@ if [ "${SERVER_PROTO}" == "http" ]; then
   SERVER_PORT=4440
 else
   # used in profile of debians startup script to populate RDECK_JVM
-  export RUNDECK_WITH_SSL=true
+  # if not explicitly set ( e.g. disabled ).. enable it
+  if [ -z "${RUNDECK_WITH_SSL}" ]; then
+    export RUNDECK_WITH_SSL=true
+  fi
   SERVER_PORT=4443
 fi
 
