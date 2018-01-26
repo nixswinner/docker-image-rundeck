@@ -57,6 +57,8 @@ else
   # if not explicitly set ( e.g. disabled ).. enable it
   if [ -z "${RUNDECK_WITH_SSL}" ]; then
     export RUNDECK_WITH_SSL=true
+  else
+    echo "skipping force-enabling-SSL by scheme, since  RUNDECK_WITH_SSL enforced a custom value"
   fi
   SERVER_PORT=4443
 fi
