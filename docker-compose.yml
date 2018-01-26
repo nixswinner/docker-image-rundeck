@@ -17,11 +17,6 @@ services:
       RUNDECK_ADMIN_PASSWORD: ${RUNDECK_ADMIN_PASSWORD}
       GUI_BRAND_HTML: ${GUI_BRAND_HTML}
       RDECK_JVM_SETTINGS: ${RDECK_JVM_SETTINGS}
-      SMTP_USERNAME: ${SMTP_USERNAME}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_DEFAULT_FROM: ${SMTP_DEFAULT_FROM}
       RUNDECK_UID: ${RUNDECK_UID}
       RUNDECK_GID: ${RUNDECK_GID}
       RUNDECK_STORAGE_PROVIDER: ${RUNDECK_STORAGE_PROVIDER}
@@ -34,6 +29,7 @@ services:
       - rundeck_logs:/var/log/rundeck
       - rundeck_storage:/var/lib/rundeck/var/storage
       - rundeck_tmp:/var/rundeck
+      - ./bin/docker-entrypoint.sh:/docker-entrypoint.sh
       # mount those for your own ssh keys
       # - .keys/id_rsa:/var/lib/rundeck/.ssh/id_rsa
       # - .keys/id_rsa.pub:/var/lib/rundeck/.ssh/id_rsa.pub
