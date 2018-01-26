@@ -128,19 +128,12 @@ if grep -q dataSource.username /etc/rundeck/rundeck-config.properties ; then
 else
   echo "dataSource.username = ${DB_USER}" >> /etc/rundeck/rundeck-config.properties
 fi
+
+
 if grep -q dataSource.password /etc/rundeck/rundeck-config.properties ; then
   sed -i 's,dataSource.password = .*,dataSource.password = '${DB_PASSWORD}',g' /etc/rundeck/rundeck-config.properties
 else
   echo "dataSource.password = ${DB_PASSWORD}" >> /etc/rundeck/rundeck-config.properties
-fi
-
-# Check if we need to set the rundeck.gui.brand.html property
-if [ -n "${GUI_BRAND_HTML}" ]; then
-  if grep -q rundeck.gui.brand.html /etc/rundeck/rundeck-config.properties ; then
-    sed -i 's/rundeck\.gui\.brand\.html.*$/rundeck\.gui\.brand\.html = '${GUI_BRAND_HTML}'/g' /etc/rundeck/rundeck-config.properties
-  else
-    echo "rundeck.gui.brand.html = ${GUI_BRAND_HTML}" >> /etc/rundeck/rundeck-config.properties
-  fi
 fi
 
 # set the admin password
