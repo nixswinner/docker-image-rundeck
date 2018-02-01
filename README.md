@@ -1,8 +1,9 @@
 rundeck
 ==============
 
-Docker image [eugenmayer/rundeck](https://hub.docker.com/r/eugenmayer/rundeck/) for running [rundeck](http://rundeck.org)
+Docker: Docker image [eugenmayer/rundeck](https://hub.docker.com/r/eugenmayer/rundeck/) for running [rundeck](http://rundeck.org)
 
+Rancher: Also see the corresponding [rancher-catalog](https://github.com/EugenMayer/docker-rancher-extra-catalogs) if you run [rancher](https://rancher.com/)
 
 # Usage
 
