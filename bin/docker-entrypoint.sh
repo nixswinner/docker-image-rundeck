@@ -20,7 +20,7 @@ chown -R rundeck:rundeck /tmp/rundeck
 chmod -R 750 /tmp/rundeck
 
 
-initfile=/etc/rundeck.init
+initfile=/etc/rundeck/rundeck.init
 if [ ! -f "${initfile}" ]; then
   echo "Initializing with defaults"
   ############  initial configuration copy, once only
