@@ -55,8 +55,8 @@ Please see the [.env](https://github.com/EugenMayer/rundeck/blob/master/.env) fi
 /var/rundeck
 /var/lib/rundeck - Not recommended to use as a volume as it contains webapp.  For SSH key you can use the this volume: /var/lib/rundeck/.ssh
 /opt/rundeck-plugins - For adding external plugins
-/var/log/rundeck - logs
-/var/lib/rundeck/logs
+/var/log/rundeck - general daemon logs
+/var/lib/rundeck/logs - the logs and states of your jobs
 /var/lib/rundeck/var/storage - file based storage folder
 ```
 
