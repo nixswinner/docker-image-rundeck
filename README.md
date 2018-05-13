@@ -30,6 +30,18 @@ run every single container start. So `-v mysqcript.sh:/docker-entrypoint.d/myscr
 1. As always, update passwords for pre-installed accounts
 1. I sometimes get connection reset by peer errors when building the Docker image from the Rundeck download URL.  Trying again usually works.
 
+# Volumes
+
+In order of importance
+
+```
+/etc/rundeck - rundeck configuration
+/var/rundeck - rundecks project folder
+/var/lib/rundeck/logs - the logs and states of your jobs - pretty important!!!
+/var/lib/rundeck/var/storage - file based storage folder
+/opt/rundeck-plugins - For adding external plugins
+/var/log/rundeck - general daemon logs
+```
 
 # Advanced configuration
 
@@ -48,20 +60,13 @@ The entrypoint run script will check for docker secrets set for RUNDECK_PASSWORD
 
 Please see the [.env](https://github.com/EugenMayer/rundeck/blob/master/.env) file
 
-# Volumes
-
-```
-/etc/rundeck - rundesk configuration
-/var/rundeck
-/var/lib/rundeck - Not recommended to use as a volume as it contains webapp.  For SSH key you can use the this volume: /var/lib/rundeck/.ssh
-/opt/rundeck-plugins - For adding external plugins
-/var/log/rundeck - general daemon logs
-/var/lib/rundeck/logs - the logs and states of your jobs
-/var/lib/rundeck/var/storage - file based storage folder
-```
-
 # Using an SSL Terminated Proxy
-See: http://rundeck.org/docs/administration/configuring-ssl.html#using-an-ssl-terminated-proxy
+See the docker-compose.yml `rundeckhttpd` - that is how you usually would do a SSL termination proxy, nothing in addition is needed.
+If you would not enable ACME in traefik, SSL would work.
+Also See: http://rundeck.org/docs/administration/configuring-ssl.html#using-an-ssl-terminated-proxy
 
 # Upgrading
 See: http://rundeck.org/docs/upgrading/index.html
+
+# Nginx
+A helper to fix the missing OPTIONS calls in rundeck and allowing CORS 

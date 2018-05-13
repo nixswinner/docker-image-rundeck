@@ -23,6 +23,11 @@ services:
       LOGIN_MODULE: ${LOGIN_MODULE}
       JAAS_CONF_FILE: ${JAAS_CONF_FILE}
       RUNDECK_WITH_SSL: "${RUNDECK_WITH_SSL}"
+      RD_USER: admin
+      RD_PASSWORD: admin
+      RD_URL: http://localhost:4440
+      SERVER_URL: http://localhost:4440
+      RD_BYPASS_URL: ${EXTERNAL_SERVER_URL}
     volumes:
       - rundeck_plugins:/opt/rundeck-plugins
       - rundeck_config:/etc/rundeck
@@ -39,6 +44,36 @@ services:
     ports:
       - 80:4440
       - 443:4443
+  # nginx is used to deal with the OPTIONS call not implemented in rundeck, nothing else
+  rundecknginx:
+    image: eugenmayer/rundeck_nginx
+    labels:
+      # that basically means, register a front in traffic, so if the host matches rundeck.lan, forward it to a traefik backend
+      # called rundeck, which has the ip of this container, and forward to port 80 - so right to us in terms to our nginx
+      # daemon
+      - "traefik.backend=rundeck"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=Host:rundeck.lan"
+      - "traefik.enable=true"
+  # usually you will do your SSL interception with this
+  rundeckhttpd:
+    restart: always
+    image: traefik
+    # --docker.exposedByDefault=false is used to forbid traefik to auto-register all container exposing ports in the Dockerfile
+    # we only want to register the ones we set the traefik.enabled label on
+    # we use --docker to be able to register by docker label, see rundecknginx
+    # traefik is used so we mimic the production setup, where traefik does the SSL interception - in this setup
+    # he has noting else to do to forward to nginx, and nginx does provide the fix for the OPTIONS call
+    # which is not possible with traefik
+    # we configure the entrypoint on 4080 since if we use curl from then inner container network using rundeck.lan:4080 the host
+    # mapping 4080:80 would not be respected and would fail, thus we need to map 4080:4080
+    # and thus we need to change the entrypoint
+    command: -c /dev/null --api --docker --entrypoints="Name:http Address::4080" --docker.exposedByDefault=false --docker.domain=docker.localhost --logLevel=DEBUG
+    ports:
+      - 4080:4080
+      - 8080:8080 # thats the traefik admin backend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   db:
     image: postgres:9.6
     volumes:
