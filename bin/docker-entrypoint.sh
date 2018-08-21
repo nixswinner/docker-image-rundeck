@@ -21,6 +21,8 @@ chmod -R 750 /tmp/rundeck
 
 
 initfile=/etc/rundeck/rundeck.init
+upgrade3xfile=/etc/rundeck/rundeck.upgraded3x
+
 if [ ! -f "${initfile}" ]; then
   echo "Initializing with defaults"
   ############  initial configuration copy, once only
@@ -29,7 +31,48 @@ if [ ! -f "${initfile}" ]; then
   cp -R /opt/rundeck-defaults/* /etc/rundeck
   chown -R rundeck:rundeck /etc/rundeck
 
+  # generate server uuid
+  SERVER_UUID=`uuidgen`
+  sed -i 's,#\?#rundeck.server.uuid\=.*,rundeck.server.uuid\=\='${SERVER_UUID}',g' /etc/rundeck/rundeck-config.properties
   touch ${initfile}
+  touch ${upgrade3xfile}
+fi
+
+
+if [ ! -f "${upgrade3xfile}" ]; then
+  echo "Upgrading defaults to 3.x level"
+  ############  initial configuration copy, once only
+
+  # copy rundeck defaults
+  mkdir -p /etc/rundeck/pre-3x-upgrade
+  echo "backup of pre 3.x config files to /etc/rundeck/pre-3x-upgrade"
+
+  cp -v /etc/rundeck/admin.aclpolicy \
+    /etc/rundeck/apitoken.aclpolicy \
+    /etc/rundeck/cli-log4j.properties \
+    /etc/rundeck/framework.properties \
+    /etc/rundeck/log4j.properties \
+    /etc/rundeck/profile \
+    /etc/rundeck/project.properties \
+    /etc/rundeck/rundeck-config.properties /etc/rundeck/pre-3x-upgrade
+
+  echo "deploying new 3.x defaults"
+  cp -v /opt/rundeck-defaults/admin.aclpolicy \
+    /opt/rundeck-defaults/apitoken.aclpolicy \
+    /opt/rundeck-defaults/cli-log4j.properties \
+    /opt/rundeck-defaults/framework.properties \
+    /opt/rundeck-defaults/log4j.properties \
+    /opt/rundeck-defaults/profile \
+    /opt/rundeck-defaults/project.properties \
+    /opt/rundeck-defaults/rundeck-config.properties /etc/rundeck
+
+  # we did not have a server uuid < 3.x, so generate one now
+  SERVER_UUID=`uuidgen`
+  sed -i 's,#\?#rundeck.server.uuid\=.*,rundeck.server.uuid\=\='${SERVER_UUID}',g' /etc/rundeck/rundeck-config.properties
+  touch ${initfile}
+
+  chown -R rundeck:rundeck /etc/rundeck
+  touch ${upgrade3xfile}
 fi
 
 ############## ensure mandatory things are set 
@@ -131,17 +174,13 @@ sed -i 's,framework.server.url\ \=.*,framework.server.url\ \=\ '${SERVER_URL}',g
 # database
 sed -i 's,dataSource.dbCreate.*,,g' /etc/rundeck/rundeck-config.properties
 sed -i 's,dataSource.url = .*,dataSource.url = '${DATABASE_URL}',g' /etc/rundeck/rundeck-config.properties
-if grep -q dataSource.username /etc/rundeck/rundeck-config.properties ; then
-  :
-else
-  echo "dataSource.username = ${DB_USER}" >> /etc/rundeck/rundeck-config.properties
-fi
+sed -i 's,dataSource.username\ \=\ .*,dataSource.username\ \=\ '${DB_USER}',g' /etc/rundeck/rundeck-config.properties
+sed -i 's,dataSource.password\ \=\ .*,dataSource.password\ \=\ '${DB_PASSWORD}',g' /etc/rundeck/rundeck-config.properties
 
-
-if grep -q dataSource.password /etc/rundeck/rundeck-config.properties ; then
-  sed -i 's,dataSource.password = .*,dataSource.password = '${DB_PASSWORD}',g' /etc/rundeck/rundeck-config.properties
+if [ "${DB_TYPE}" == "postgresql" ]; then
+    echo 'dataSource.driverClassName = org.postgresql.Driver' >> /etc/rundeck/rundeck-config.properties
 else
-  echo "dataSource.password = ${DB_PASSWORD}" >> /etc/rundeck/rundeck-config.properties
+    sed -i 's,dataSource.driverClassName.*,,g' /etc/rundeck/rundeck-config.properties
 fi
 
 # set the admin password
@@ -194,5 +233,5 @@ echo "Server URL set to ${EXTERNAL_SERVER_URL}"
 echo "==================================================================="
 
 sleep 1
-echo "Starting rundesk"
+echo "Starting rundeck"
 /usr/bin/supervisord -c /etc/supervisor/conf.d/rundeck.conf

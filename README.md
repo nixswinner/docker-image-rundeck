@@ -15,6 +15,7 @@ docker-compose up
 You can now access the instance by going on `https://localhost`
 If you set an `EXTERNAL_SERVER_URL` with an `http` scheme in the [.env](https://github.com/EugenMayer/rundeck/blob/master/.env) file, you need to use `http://localhost`
 
+Username is `admin` - password is `rundeck`
 ## Configuration / Adjustments 
 
 Just edit [.env](https://github.com/EugenMayer/rundeck/blob/master/.env) and adjust it to what you need

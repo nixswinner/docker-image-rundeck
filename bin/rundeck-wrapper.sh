@@ -8,9 +8,6 @@
 
 prog="rundeckd"
 PIDFILE=/var/run/$prog.pid
-DAEMON="${JAVA_HOME:-/usr}/bin/java"
-DAEMON_ARGS="${RDECK_JVM} -cp ${BOOTSTRAP_CP} com.dtolabs.rundeck.RunServer /var/lib/rundeck 4440"
-rundeckd="$DAEMON $DAEMON_ARGS"
 
 function shutdown()
 {
@@ -20,6 +17,8 @@ function shutdown()
 
 echo -n "`date +"%d.%m.%Y %T.%3N"` - Starting ${prog}"
 cd /var/log/rundeck
+
+# $rundeckd is populated in /etc/rundeck/profile
 nohup su -s /bin/bash rundeck -c "$rundeckd" 2>&1 /dev/stdout &
 PID=$!
 echo $PID > $PIDFILE

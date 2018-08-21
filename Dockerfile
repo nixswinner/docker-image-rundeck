@@ -4,8 +4,8 @@
 
 FROM debian:stretch
 
-ARG RUNDECK_VERSION=2.10.7
-ARG RUNDECK_CLI_VERSION=1.0.23
+ARG RUNDECK_VERSION=3.0.2.20180817-1.201808172107
+ARG RUNDECK_CLI_VERSION=1.0.29
 
 ENV SERVER_URL=https://localhost:4443 \
     RUNDECK_STORAGE_PROVIDER=file \
@@ -20,11 +20,12 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get -qq update && \
     apt-get -qqy install -t stretch-backports --no-install-recommends bash openjdk-8-jre-headless ca-certificates-java supervisor procps sudo ca-certificates openssh-client pwgen curl uuid-runtime parallel && \
     cd /tmp/ && \
-    curl -Lo /tmp/rundeck.deb http://dl.bintray.com/rundeck/rundeck-deb/rundeck_${RUNDECK_VERSION}-1-GA_all.deb && \
+    curl -Lo /tmp/rundeck.deb http://dl.bintray.com/rundeck/rundeck-deb/rundeck_${RUNDECK_VERSION}_all.deb && \
     # echo '38937c90592ee9ca085bdec65dbbbb0693db2b85772ef5860ac856e044002aa0  rundeck.deb' > /tmp/rundeck.sig && \
     # shasum -a256 -c /tmp/rundeck.sig && \
-    curl -Lo /tmp/rundeck-cli.deb https://github.com/rundeck/rundeck-cli/releases/download/v${RUNDECK_CLI_VERSION}/rundeck-cli_${RUNDECK_CLI_VERSION}-1_all.deb && \
-    cd - && \
+    curl -Lo /tmp/rundeck-cli.deb https://github.com/rundeck/rundeck-cli/releases/download/v${RUNDECK_CLI_VERSION}/rundeck-cli_${RUNDECK_CLI_VERSION}-1_all.deb
+
+RUN cd - && \
     dpkg -i /tmp/rundeck*.deb && rm /tmp/rundeck*.deb && \
     chown rundeck:rundeck /tmp/rundeck && \
     mkdir -p /var/lib/rundeck/.ssh && \

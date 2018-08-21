@@ -1,8 +1,8 @@
 version: "2"
 
 services:
-  app:
-    image: eugenmayer/rundeck:2.11.0
+  rundeck:
+    image: eugenmayer/rundeck:3.0.2
     depends_on:
       - db
     environment:
@@ -24,7 +24,7 @@ services:
       JAAS_CONF_FILE: ${JAAS_CONF_FILE}
       RUNDECK_WITH_SSL: "${RUNDECK_WITH_SSL}"
       RD_USER: admin
-      RD_PASSWORD: admin
+      RD_PASSWORD: ${RUNDECK_ADMIN_PASSWORD}
       RD_URL: http://localhost:4440
       SERVER_URL: http://localhost:4440
       RD_BYPASS_URL: ${EXTERNAL_SERVER_URL}
@@ -34,29 +34,29 @@ services:
       - rundeck_logs:/var/log/rundeck
       - rundeck_storage:/var/lib/rundeck/var/storage
       - rundeck_tmp:/var/rundeck
-      - ./bin/docker-entrypoint.sh:/docker-entrypoint.sh
       # mount those for your own ssh keys
       # - .keys/id_rsa:/var/lib/rundeck/.ssh/id_rsa
       # - .keys/id_rsa.pub:/var/lib/rundeck/.ssh/id_rsa.pub
     labels:
       io.rancher.container.create_agent: 'true'
       io.rancher.container.agent.role: 'environment'
-    ports:
-      - 80:4440
-      - 443:4443
   # nginx is used to deal with the OPTIONS call not implemented in rundeck, nothing else
   rundecknginx:
+    depends_on:
+      - rundeck
     image: eugenmayer/rundeck_nginx
     labels:
       # that basically means, register a front in traffic, so if the host matches rundeck.lan, forward it to a traefik backend
       # called rundeck, which has the ip of this container, and forward to port 80 - so right to us in terms to our nginx
       # daemon
-      - "traefik.backend=rundeck"
+      - "traefik.backend=rundecknginx"
       - "traefik.port=80"
       - "traefik.frontend.rule=Host:rundeck.lan"
       - "traefik.enable=true"
   # usually you will do your SSL interception with this
-  rundeckhttpd:
+  traefik:
+    depends_on:
+      - rundecknginx
     restart: always
     image: traefik
     # --docker.exposedByDefault=false is used to forbid traefik to auto-register all container exposing ports in the Dockerfile
@@ -68,9 +68,9 @@ services:
     # we configure the entrypoint on 4080 since if we use curl from then inner container network using rundeck.lan:4080 the host
     # mapping 4080:80 would not be respected and would fail, thus we need to map 4080:4080
     # and thus we need to change the entrypoint
-    command: -c /dev/null --api --docker --entrypoints="Name:http Address::4080" --docker.exposedByDefault=false --docker.domain=docker.localhost --logLevel=DEBUG
+    command: -c /dev/null --api --docker --entrypoints="Name:http Address::80" --docker.exposedByDefault=false --docker.domain=docker.localhost --logLevel=DEBUG
     ports:
-      - 4080:4080
+      - 80:80
       - 8080:8080 # thats the traefik admin backend
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
