@@ -67,10 +67,8 @@ if [ ! -f "${upgrade3xfile}" ]; then
     /opt/rundeck-defaults/rundeck-config.properties /etc/rundeck
 
   # we did not have a server uuid < 3.x, so generate one now
-  SERVER_UUID=`uuidgen`
-  sed -i 's,#\?#rundeck.server.uuid\=.*,rundeck.server.uuid\=\='${SERVER_UUID}',g' /etc/rundeck/rundeck-config.properties
-  touch ${initfile}
-
+  SERVER_UUID=`uuidgen`  
+  echo "rundeck.server.uuid = $SERVER_UUID" >> /etc/rundeck/rundeck-config.propertie
   chown -R rundeck:rundeck /etc/rundeck
   touch ${upgrade3xfile}
 fi
