@@ -1,3 +1,9 @@
+##3.0.3
+http://rundeck.org/docs/history/changelog.html#release-3.0.3
+
+##3.0.2 
+http://rundeck.org/docs/history/changelog.html#release-3.0.2
+
 ## 2.11.5
 http://rundeck.org/docs/history/changelog.html#release-2.11.5
 
