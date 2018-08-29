@@ -5,7 +5,7 @@
 FROM debian:stretch
 
 ARG RUNDECK_VERSION=3.0.2.20180817-1.201808172107
-ARG RUNDECK_CLI_VERSION=1.0.30
+ARG RUNDECK_CLI_VERSION=0.1.30
 
 ENV SERVER_URL=https://localhost:4443 \
     RUNDECK_STORAGE_PROVIDER=file \
@@ -23,7 +23,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     curl -Lo /tmp/rundeck.deb http://dl.bintray.com/rundeck/rundeck-deb/rundeck_${RUNDECK_VERSION}_all.deb && \
     # echo '38937c90592ee9ca085bdec65dbbbb0693db2b85772ef5860ac856e044002aa0  rundeck.deb' > /tmp/rundeck.sig && \
     # shasum -a256 -c /tmp/rundeck.sig && \
-    curl -Lo /tmp/rundeck-cli.deb https://github.com/rundeck/rundeck-cli/releases/download/v${RUNDECK_CLI_VERSION}/rundeck-cli_${RUNDECK_CLI_VERSION}-1_all.deb
+    curl -Lo /tmp/rundeck-cli.deb http://dl.bintray.com/rundeck/rundeck-deb/rundeck-cli_${RUNDECK_CLI_VERSION}-1_all.deb
 
 RUN cd - && \
     dpkg -i /tmp/rundeck*.deb && rm /tmp/rundeck*.deb && \
