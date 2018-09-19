@@ -1,3 +1,6 @@
+##3.0.6
+http://rundeck.org/docs/history/changelog.html#release-3.0.6
+
 ##3.0.5
 http://rundeck.org/docs/history/changelog.html#release-3.0.5
 
