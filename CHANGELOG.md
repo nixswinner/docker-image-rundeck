@@ -1,3 +1,7 @@
+## Downloads from
+
+http://dl.bintray.com/rundeck/rundeck-deb/
+
 ##3.0.7
 https://rundeck.org/docs/history/changelog.html#release-3.0.7
 
