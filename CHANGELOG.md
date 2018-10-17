@@ -2,16 +2,16 @@
 
 http://dl.bintray.com/rundeck/rundeck-deb/
 
-##3.0.7
+## 3.0.7
 https://rundeck.org/docs/history/changelog.html#release-3.0.7
 
-##3.0.6
+## 3.0.6
 http://rundeck.org/docs/history/changelog.html#release-3.0.6
 
-##3.0.5
+## 3.0.5
 http://rundeck.org/docs/history/changelog.html#release-3.0.5
 
-##3.0.3
+## 3.0.3
 http://rundeck.org/docs/history/changelog.html#release-3.0.3
 
 ##3.0.2 
