@@ -12,17 +12,21 @@ ENV SERVER_URL=https://localhost:4443 \
     LOGIN_MODULE=RDpropertyfilelogin \
     JAAS_CONF_FILE=jaas-loginmodule.conf \
     KEYSTORE_PASS=adminadmin \
-    TRUSTSTORE_PASS=adminadmin
+    TRUSTSTORE_PASS=adminadmin \
+    SERVER_DOWNLOAD_URL="http://dl.bintray.com/rundeck/rundeck-deb/rundeck_${RUNDECK_VERSION}_all.deb"
+    CLI_DOWNLOAD_URL="http://dl.bintray.com/rundeck/rundeck-deb/rundeck-cli_${RUNDECK_CLI_VERSION}-1_all.deb"    
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list && \
     apt-get -qq update && \
     apt-get -qqy install -t stretch-backports --no-install-recommends bash openjdk-8-jre-headless ca-certificates-java supervisor procps sudo ca-certificates openssh-client pwgen curl uuid-runtime parallel && \
     cd /tmp/ && \
-    curl -Lo /tmp/rundeck-server.deb http://dl.bintray.com/rundeck/rundeck-deb/rundeck_${RUNDECK_VERSION}_all.deb && \
+    echo "downloading rundeck server from: ${SERVER_DOWNLOAD_URL}" && \
+    curl -fLo /tmp/rundeck-server.deb ${SERVER_DOWNLOAD_URL} && \
     # echo '38937c90592ee9ca085bdec65dbbbb0693db2b85772ef5860ac856e044002aa0  rundeck.deb' > /tmp/rundeck.sig && \
     # shasum -a256 -c /tmp/rundeck.sig && \
-    curl -Lo /tmp/rundeck-cli.deb http://dl.bintray.com/rundeck/rundeck-deb/rundeck-cli_${RUNDECK_CLI_VERSION}-1_all.deb
+    echo "downloading rundeck cli from: ${CLI_DOWNLOAD_URL}" && \    
+    curl -fLo /tmp/rundeck-cli.deb ${CLI_DOWNLOAD_URL}
 
 RUN cd - && \
     dpkg -i /tmp/rundeck-server.deb && rm /tmp/rundeck-server.deb && \
