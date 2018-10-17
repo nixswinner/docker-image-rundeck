@@ -13,7 +13,7 @@ ENV SERVER_URL=https://localhost:4443 \
     JAAS_CONF_FILE=jaas-loginmodule.conf \
     KEYSTORE_PASS=adminadmin \
     TRUSTSTORE_PASS=adminadmin \
-    SERVER_DOWNLOAD_URL="http://dl.bintray.com/rundeck/rundeck-deb/rundeck_${RUNDECK_VERSION}_all.deb"
+    SERVER_DOWNLOAD_URL="http://dl.bintray.com/rundeck/rundeck-deb/rundeck_${RUNDECK_VERSION}_all.deb" \
     CLI_DOWNLOAD_URL="http://dl.bintray.com/rundeck/rundeck-deb/rundeck-cli_${RUNDECK_CLI_VERSION}-1_all.deb"    
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
