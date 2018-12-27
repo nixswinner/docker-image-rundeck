@@ -2,6 +2,8 @@
 
 http://dl.bintray.com/rundeck/rundeck-deb/
 
+## 3.11
+https://docs.rundeck.com/docs/history/changelog.html#release-3.0.11
 
 ## 3.09
 https://rundeck.org/docs/history/changelog.html#release-3.0.9
