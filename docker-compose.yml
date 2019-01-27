@@ -2,7 +2,7 @@ version: "2"
 
 services:
   rundeck:
-    image: eugenmayer/rundeck:3.0.2.20180817-1.201808172107
+    image: eugenmayer/rundeck:3.0.13.20190123-1.201901240147
     depends_on:
       - db
     environment:
