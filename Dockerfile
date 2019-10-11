@@ -3,7 +3,7 @@
 # now on https://github.com/eugenmayer/rundeck
 
 FROM debian:stretch
-ARG RUNDECK_VERSION=3.0.20.20190408-1.201904081511
+ARG RUNDECK_VERSION=3.1.2.20190927-1
 ARG RUNDECK_CLI_VERSION=1.1.7
 
 ENV SERVER_URL=https://localhost:4443 \
@@ -31,7 +31,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN cd - && \
     dpkg -i /tmp/rundeck-server.deb && rm /tmp/rundeck-server.deb && \
     dpkg -i /tmp/rundeck-cli.deb && rm /tmp/rundeck-cli.deb && \    
-    chown rundeck:rundeck /tmp/rundeck && \
     mkdir -p /var/lib/rundeck/.ssh && \
     chown rundeck:rundeck /var/lib/rundeck/.ssh && \
     sed -i "s/export RDECK_JVM=\"/export RDECK_JVM=\"\${RDECK_JVM} /" /etc/rundeck/profile && \
