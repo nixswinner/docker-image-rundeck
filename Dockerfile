@@ -3,7 +3,7 @@
 # now on https://github.com/eugenmayer/rundeck
 
 FROM debian:stretch
-ARG RUNDECK_VERSION=3.1.2.20190927-1
+ARG RUNDECK_VERSION=3.1.3.20191204-1
 ARG RUNDECK_CLI_VERSION=1.1.7
 
 ENV SERVER_URL=https://localhost:4443 \

@@ -2,6 +2,10 @@
 
     http://dl.bintray.com/rundeck/rundeck-deb/
 
+## 3.1.3
+ 
+https://github.com/rundeck/rundeck/blob/master/RELEASE.md
+
 ## 3.1.2
 
 https://github.com/rundeck/rundeck/blob/master/RELEASE.md
