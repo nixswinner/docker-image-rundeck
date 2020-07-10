@@ -16,6 +16,7 @@ chown -R rundeck:rundeck /var/rundeck
 chown -R rundeck:adm /var/log/rundeck
 chown -R rundeck:rundeck /var/lib/rundeck
 chown -R rundeck:rundeck /opt/rundeck-defaults
+mkdir -p /tmp/rundeck
 chown -R rundeck:rundeck /tmp/rundeck
 chmod -R 750 /tmp/rundeck
 

@@ -69,5 +69,21 @@ Also See: http://rundeck.org/docs/administration/configuring-ssl.html#using-an-s
 # Upgrading
 See: http://rundeck.org/docs/upgrading/index.html
 
+## Upgrading image
+
+- adjust `version` to the new version rundeck released
+- run `make build`
+
 # Nginx
 A helper to fix the missing OPTIONS calls in rundeck and allowing CORS 
+
+
+# Build yourself
+
+```shell
+make build
+
+# or
+
+docker build . -t yourown
+```
