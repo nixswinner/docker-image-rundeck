@@ -6,7 +6,7 @@
 # yet not possible, since buster has jre11 only
 FROM debian:buster
 ARG RUNDECK_VERSION=
-ARG RUNDECK_CLI_VERSION=1.3.1
+ARG RUNDECK_CLI_VERSION=1.3.3
 
 ENV SERVER_URL=https://localhost:4443 \
     RUNDECK_STORAGE_PROVIDER=file \
