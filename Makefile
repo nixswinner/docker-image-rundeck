@@ -1,6 +1,5 @@
 build:
-	#docker pull debian:buster
-	docker pull debian:stretch
+	docker pull adoptopenjdk/openjdk11:debian
 	source ./version && docker build -t eugenmayer/rundeck:"$${VERSION}" --build-arg RUNDECK_VERSION="$${VERSION}" . 
 
 push:
