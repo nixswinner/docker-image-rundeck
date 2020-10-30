@@ -14,8 +14,9 @@ ENV SERVER_URL=https://localhost:4443 \
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
-    && apt-get -y install --no-install-recommends bash ca-certificates-java supervisor procps sudo ca-certificates  \
-     openssh-client software-properties-common curl uuid-runtime debconf-utils \
+    && apt-get -y install --no-install-recommends bash procps sudo ca-certificates ca-certificates-java \
+        openssh-client software-properties-common curl uuid-runtime \
+    && apt install -y supervisor \
     && echo "downloading rundeck server from: ${SERVER_DOWNLOAD_URL}" \
     && curl -fLo /tmp/rundeck-server.deb ${SERVER_DOWNLOAD_URL} \
     && echo "downloading rundeck cli from: ${CLI_DOWNLOAD_URL}"  \
