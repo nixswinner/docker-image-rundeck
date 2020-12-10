@@ -203,13 +203,16 @@ fi
 
 
 #### STORAGE TYPES
+
+## PROVIDER TO STORE KEYS : https://docs.rundeck.com/docs/administration/configuration/storage-facility.html#key-storage
 if [ "${RUNDECK_STORAGE_PROVIDER}" == "db" ]; then
   echo "rundeck.storage.provider.1.type=db" >> /etc/rundeck/rundeck-config.properties
   echo "rundeck.storage.provider.1.path=/" >> /etc/rundeck/rundeck-config.properties
 fi
 
-if [ "${RUNDECK_PROJECT_STORAGE_TYPE}" == "db" ]; then
-  echo "rundeck.projectsStorageType=db" >> /etc/rundeck/rundeck-config.properties
+## PROVIDER TO PROJECTS : https://docs.rundeck.com/docs/administration/projects/configuration.html#storage-types
+if [ -n "${RUNDECK_PROJECT_STORAGE_TYPE}" ]; then
+  echo "rundeck.projectsStorageType=${RUNDECK_PROJECT_STORAGE_TYPE}" >> /etc/rundeck/rundeck-config.properties
 fi
 
 #### MISC CONFIG

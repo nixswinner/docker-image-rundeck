@@ -12,19 +12,27 @@ ENV SERVER_URL=https://localhost:4443 \
     SERVER_DOWNLOAD_URL="http://dl.bintray.com/rundeck/rundeck-deb/rundeck_${RUNDECK_VERSION}_all.deb" \
     CLI_DOWNLOAD_URL="http://dl.bintray.com/rundeck/rundeck-deb/rundeck-cli_${RUNDECK_CLI_VERSION}-1_all.deb"    
 
+# we use a custom build of the client due to https://github.com/rundeck/rundeck-cli/issues/341
+RUN mkdir -p /opt/rundeck-cli
+COPY bin/rundeck-cli-1.3.4-dev.jar /opt/rundeck-cli/rundeck-cli.jar
+COPY bin/rd.sh /usr/bin/rd
+
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get -y install --no-install-recommends bash procps sudo ca-certificates ca-certificates-java \
-        openssh-client software-properties-common curl uuid-runtime \
+    openssh-client software-properties-common curl uuid-runtime \
     && apt install -y supervisor \
     && echo "downloading rundeck server from: ${SERVER_DOWNLOAD_URL}" \
     && curl -fLo /tmp/rundeck-server.deb ${SERVER_DOWNLOAD_URL} \
-    && echo "downloading rundeck cli from: ${CLI_DOWNLOAD_URL}"  \
-    && curl -fLo /tmp/rundeck-cli.deb ${CLI_DOWNLOAD_URL} \
+
     && dpkg -i /tmp/rundeck-server.deb \
     && rm /tmp/rundeck-server.deb \
-    && dpkg -i /tmp/rundeck-cli.deb \
-    && rm /tmp/rundeck-cli.deb \
+    ## use a custom cli version due to https://github.com/rundeck/rundeck-cli/issues/341
+    && chmod +x /usr/bin/rd \
+    # && echo "downloading rundeck cli from: ${CLI_DOWNLOAD_URL}"  \
+    # && curl -fLo /tmp/rundeck-cli.deb ${CLI_DOWNLOAD_URL} \
+    # && dpkg -i /tmp/rundeck-cli.deb \
+    # && rm /tmp/rundeck-cli.deb \
     && mkdir -p /var/lib/rundeck/.ssh \
     && chown rundeck:rundeck /var/lib/rundeck/.ssh \
     && sed -i "s/export RDECK_JVM=\"/export RDECK_JVM=\"\${RDECK_JVM} /" /etc/rundeck/profile \
