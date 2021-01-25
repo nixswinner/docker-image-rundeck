@@ -29,10 +29,10 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && rm /tmp/rundeck-server.deb \
     ## use a custom cli version due to https://github.com/rundeck/rundeck-cli/issues/341
     && chmod +x /usr/bin/rd \
-    # && echo "downloading rundeck cli from: ${CLI_DOWNLOAD_URL}"  \
-    # && curl -fLo /tmp/rundeck-cli.deb ${CLI_DOWNLOAD_URL} \
-    # && dpkg -i /tmp/rundeck-cli.deb \
-    # && rm /tmp/rundeck-cli.deb \
+    && echo "downloading rundeck cli from: ${CLI_DOWNLOAD_URL}"  \
+    && curl -fLo /tmp/rundeck-cli.deb ${CLI_DOWNLOAD_URL} \
+    && dpkg -i /tmp/rundeck-cli.deb \
+    && rm /tmp/rundeck-cli.deb \
     && mkdir -p /var/lib/rundeck/.ssh \
     && chown rundeck:rundeck /var/lib/rundeck/.ssh \
     && sed -i "s/export RDECK_JVM=\"/export RDECK_JVM=\"\${RDECK_JVM} /" /etc/rundeck/profile \
