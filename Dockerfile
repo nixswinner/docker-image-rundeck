@@ -8,9 +8,7 @@ ENV SERVER_URL=https://localhost:4443 \
     LOGIN_MODULE=RDpropertyfilelogin \
     JAAS_CONF_FILE=jaas-loginmodule.conf \
     KEYSTORE_PASS=adminadmin \
-    TRUSTSTORE_PASS=adminadmin \
-    SERVER_DOWNLOAD_URL="http://dl.bintray.com/rundeck/rundeck-deb/rundeck_${RUNDECK_VERSION}_all.deb" \
-    CLI_DOWNLOAD_URL="http://dl.bintray.com/rundeck/rundeck-deb/rundeck-cli_${RUNDECK_CLI_VERSION}-1_all.deb"    
+    TRUSTSTORE_PASS=adminadmin
 
 # we use a custom build of the client due to https://github.com/rundeck/rundeck-cli/issues/341
 RUN mkdir -p /opt/rundeck-cli
@@ -19,20 +17,16 @@ COPY bin/rd.sh /usr/bin/rd
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
-    && apt-get -y install --no-install-recommends bash procps sudo ca-certificates ca-certificates-java \
+    && apt-get -y install --no-install-recommends bash procps sudo ca-certificates ca-certificates-java curl gnupg2 \
     openssh-client software-properties-common curl uuid-runtime \
     && apt install -y supervisor \
-    && echo "downloading rundeck server from: ${SERVER_DOWNLOAD_URL}" \
-    && curl -fLo /tmp/rundeck-server.deb ${SERVER_DOWNLOAD_URL} \
 
-    && dpkg -i /tmp/rundeck-server.deb \
-    && rm /tmp/rundeck-server.deb \
-    ## use a custom cli version due to https://github.com/rundeck/rundeck-cli/issues/341
+    && curl https://raw.githubusercontent.com/rundeck/packaging/main/scripts/deb-setup.sh 2> /dev/null | bash -s rundeck \
+    && apt update && apt install -y rundeck \
+
     && chmod +x /usr/bin/rd \
-    #&& echo "downloading rundeck cli from: ${CLI_DOWNLOAD_URL}"  \
-    #&& curl -fLo /tmp/rundeck-cli.deb ${CLI_DOWNLOAD_URL} \
-    #&& dpkg -i /tmp/rundeck-cli.deb \
-    #&& rm /tmp/rundeck-cli.deb \
+    #&& apt-get install -y rundeck-cli \
+
     && mkdir -p /var/lib/rundeck/.ssh \
     && chown rundeck:rundeck /var/lib/rundeck/.ssh \
     && sed -i "s/export RDECK_JVM=\"/export RDECK_JVM=\"\${RDECK_JVM} /" /etc/rundeck/profile \
