@@ -1,6 +1,6 @@
 FROM adoptopenjdk/openjdk11:debian
 ARG RUNDECK_VERSION=
-ARG RUNDECK_CLI_VERSION=1.3.4
+ARG RUNDECK_CLI_VERSION=1.3.10
 
 ENV SERVER_URL=https://localhost:4443 \
     RUNDECK_STORAGE_PROVIDER=file \
@@ -12,7 +12,7 @@ ENV SERVER_URL=https://localhost:4443 \
 
 # we use a custom build of the client due to https://github.com/rundeck/rundeck-cli/issues/341
 RUN mkdir -p /opt/rundeck-cli
-COPY bin/rundeck-cli-1.3.4-dev.jar /opt/rundeck-cli/rundeck-cli.jar
+#COPY bin/rundeck-cli-1.3.4-dev.jar /opt/rundeck-cli/rundeck-cli.jar
 COPY bin/rd.sh /usr/bin/rd
 
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -25,7 +25,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt update && apt install -y rundeck \
 
     && chmod +x /usr/bin/rd \
-    #&& apt-get install -y rundeck-cli \
+    && apt-get install -y rundeck-cli \
 
     && mkdir -p /var/lib/rundeck/.ssh \
     && chown rundeck:rundeck /var/lib/rundeck/.ssh \
