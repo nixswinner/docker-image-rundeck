@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:debian
+FROM bellsoft/liberica-openjre-debian:11
 ARG RUNDECK_VERSION=
 ARG RUNDECK_CLI_VERSION=1.3.10
 
