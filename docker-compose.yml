@@ -93,7 +93,5 @@ volumes:
     driver: local
   rundeck_plugins:
     driver: local
-  rundeck_plugins:
-    driver: local
   rundeck_db:
     driver: local

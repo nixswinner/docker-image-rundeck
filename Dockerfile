@@ -18,7 +18,7 @@ COPY bin/rd.sh /usr/bin/rd
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get -y install --no-install-recommends bash procps sudo ca-certificates ca-certificates-java curl gnupg2 \
-    openssh-client software-properties-common curl uuid-runtime \
+    openssh-client software-properties-common uuid-runtime \
     && apt install -y supervisor \
 
     && curl https://raw.githubusercontent.com/rundeck/packaging/main/scripts/deb-setup.sh 2> /dev/null | bash -s rundeck \

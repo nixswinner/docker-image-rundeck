@@ -62,7 +62,7 @@ if [ ! -f "${upgrade3xfile}" ]; then
     /opt/rundeck-defaults/apitoken.aclpolicy \
     /opt/rundeck-defaults/cli-log4j.properties \
     /opt/rundeck-defaults/framework.properties \
-    /opt/rundeck-defaults/log4j.properties \
+    /opt/rundeck-defaults/log4j2.properties \
     /opt/rundeck-defaults/profile \
     /opt/rundeck-defaults/project.properties \
     /opt/rundeck-defaults/rundeck-config.properties /etc/rundeck
