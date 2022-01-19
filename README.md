@@ -1,3 +1,11 @@
+DEPRECATION NOTICE
+==============
+
+Since we moved on to kubernetes and managed to integrate the official [rundeck docker image](https://hub.docker.com/r/rundeck/rundeck/tags) in our public
+[rundeck helm chart](https://github.com/EugenMayer/helm-charts/tree/main/charts/rundeck), i'am not going to furher maintain this docker-image.
+
+If you want to do so, please contact me in the chart repo that you want to take over or want to run a fork which i should mention here (if your fork is sustainable).
+
 rundeck
 ==============
 
