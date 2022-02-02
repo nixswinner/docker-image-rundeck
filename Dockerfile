@@ -10,11 +10,6 @@ ENV SERVER_URL=https://localhost:4443 \
     KEYSTORE_PASS=adminadmin \
     TRUSTSTORE_PASS=adminadmin
 
-# we use a custom build of the client due to https://github.com/rundeck/rundeck-cli/issues/341
-RUN mkdir -p /opt/rundeck-cli
-#COPY bin/rundeck-cli-1.3.4-dev.jar /opt/rundeck-cli/rundeck-cli.jar
-COPY bin/rd.sh /usr/bin/rd
-
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get -y install --no-install-recommends bash procps sudo ca-certificates ca-certificates-java curl gnupg2 \
@@ -24,7 +19,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && curl https://raw.githubusercontent.com/rundeck/packaging/main/scripts/deb-setup.sh 2> /dev/null | bash -s rundeck \
     && apt update && apt install -y rundeck \
 
-    && chmod +x /usr/bin/rd \
     && apt-get install -y rundeck-cli \
 
     && mkdir -p /var/lib/rundeck/.ssh \
